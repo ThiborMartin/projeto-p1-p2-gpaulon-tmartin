@@ -14,5 +14,6 @@ export const routes: Routes = [
     {path:"cesta", component:CestaComponent},
     {path:"detalhe", component:DetalheComponent},
     {path:"login", component:LoginComponent},
-    {path:"vitrine", component:VitrineComponent}
+    {path:"vitrine", component:VitrineComponent},
+    {path:"busca", component:BuscaComponent}
 ];
