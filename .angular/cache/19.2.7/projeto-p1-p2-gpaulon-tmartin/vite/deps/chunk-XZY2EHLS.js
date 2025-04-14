@@ -1,4 +1,3 @@
-import { createRequire } from 'module';const require = createRequire(import.meta.url);
 import {
   APP_BOOTSTRAP_LISTENER,
   APP_ID,
@@ -31,6 +30,7 @@ import {
   NgModule,
   NgModuleRef$1,
   NgZone,
+  Observable,
   Optional,
   PLATFORM_ID,
   PLATFORM_INITIALIZER,
@@ -43,6 +43,7 @@ import {
   ResourceStatus,
   RuntimeError,
   SecurityContext,
+  Subject,
   TESTABILITY,
   TESTABILITY_GETTER,
   TemplateRef,
@@ -55,6 +56,10 @@ import {
   ViewEncapsulation,
   XSS_SECURITY_URL,
   ZONELESS_ENABLED,
+  __async,
+  __objRest,
+  __spreadProps,
+  __spreadValues,
   _global,
   _sanitizeHtml,
   _sanitizeUrl,
@@ -67,11 +72,15 @@ import {
   bypassSanitizationTrustStyle,
   bypassSanitizationTrustUrl,
   computed,
+  concatMap,
   createNgModule,
   createPlatformFactory,
+  filter,
+  finalize,
   findLocaleData,
   formatRuntimeError,
   forwardRef,
+  from,
   getLocalePluralCase,
   inject,
   internalCreateApplication,
@@ -80,16 +89,18 @@ import {
   linkedSignal,
   makeEnvironmentProviders,
   makeStateKey,
+  map,
   numberAttribute,
+  of,
   performanceMarkFeature,
   platformCore,
-  require_cjs,
-  require_operators,
   runInInjectionContext,
   setClassMetadata,
   setDocument,
   signal,
   stringify,
+  switchMap,
+  tap,
   truncateMiddle,
   untracked,
   unwrapSafeValue,
@@ -107,17 +118,7 @@ import {
   ɵɵinject,
   ɵɵinjectAttribute,
   ɵɵstyleProp
-} from "./chunk-OGMU4Y3G.js";
-import {
-  __async,
-  __objRest,
-  __spreadProps,
-  __spreadValues,
-  __toESM
-} from "./chunk-YHCV7DAQ.js";
-
-// node_modules/@angular/common/fesm2022/location-DpBxd_aX.mjs
-var import_rxjs = __toESM(require_cjs(), 1);
+} from "./chunk-GNUQURWK.js";
 
 // node_modules/@angular/common/fesm2022/dom_tokens-rA0ACyx7.mjs
 var DOCUMENT = new InjectionToken(ngDevMode ? "DocumentToken" : "");
@@ -353,7 +354,7 @@ var PathLocationStrategy = class _PathLocationStrategy extends LocationStrategy 
 })();
 var Location = class _Location {
   /** @internal */
-  _subject = new import_rxjs.Subject();
+  _subject = new Subject();
   /** @internal */
   _basePath;
   /** @internal */
@@ -2035,20 +2036,20 @@ var NgClass = class _NgClass {
   The NgClass directive uses the custom change detection algorithm for its inputs. The custom
   algorithm is necessary since inputs are represented as complex object or arrays that need to be
   deeply-compared.
-     This algorithm is perf-sensitive since NgClass is used very frequently and its poor performance
+      This algorithm is perf-sensitive since NgClass is used very frequently and its poor performance
   might negatively impact runtime performance of the entire change detection cycle. The design of
   this algorithm is making sure that:
   - there is no unnecessary DOM manipulation (CSS classes are added / removed from the DOM only when
   needed), even if references to bound objects change;
   - there is no memory allocation if nothing changes (even relatively modest memory allocation
   during the change detection cycle can result in GC pauses for some of the CD cycles).
-     The algorithm works by iterating over the set of bound classes, staring with [class] binding and
+      The algorithm works by iterating over the set of bound classes, staring with [class] binding and
   then going over [ngClass] binding. For each CSS class name:
   - check if it was seen before (this information is tracked in the state map) and if its value
   changed;
   - mark it as "touched" - names that are not marked are not present in the latest set of binding
   and we can remove such class name from the internal data structures;
-     After iteration over all the CSS class names we've got data structure with all the information
+      After iteration over all the CSS class names we've got data structure with all the information
   necessary to synchronize changes to the DOM - it is enough to iterate over the state map, flush
   changes to the DOM and reset internal data structures so those are ready for the next change
   detection cycle.
@@ -3724,7 +3725,6 @@ var PlatformNavigation = class _PlatformNavigation {
 })();
 
 // node_modules/@angular/common/fesm2022/common.mjs
-var import_rxjs2 = __toESM(require_cjs(), 1);
 var VERSION = new Version("19.2.6");
 var ViewportScroller = class _ViewportScroller {
   // De-sugared tree-shakable injection
@@ -3735,38 +3735,104 @@ var ViewportScroller = class _ViewportScroller {
     ɵɵdefineInjectable({
       token: _ViewportScroller,
       providedIn: "root",
-      factory: () => true ? new NullViewportScroller() : new BrowserViewportScroller(inject(DOCUMENT), window)
+      factory: () => false ? new NullViewportScroller() : new BrowserViewportScroller(inject(DOCUMENT), window)
     })
   );
 };
-var NullViewportScroller = class {
+var BrowserViewportScroller = class {
+  document;
+  window;
+  offset = () => [0, 0];
+  constructor(document2, window2) {
+    this.document = document2;
+    this.window = window2;
+  }
   /**
-   * Empty implementation
+   * Configures the top offset used when scrolling to an anchor.
+   * @param offset A position in screen coordinates (a tuple with x and y values)
+   * or a function that returns the top offset position.
+   *
    */
   setOffset(offset) {
+    if (Array.isArray(offset)) {
+      this.offset = () => offset;
+    } else {
+      this.offset = offset;
+    }
   }
   /**
-   * Empty implementation
+   * Retrieves the current scroll position.
+   * @returns The position in screen coordinates.
    */
   getScrollPosition() {
-    return [0, 0];
+    return [this.window.scrollX, this.window.scrollY];
   }
   /**
-   * Empty implementation
+   * Sets the scroll position.
+   * @param position The new position in screen coordinates.
    */
   scrollToPosition(position) {
+    this.window.scrollTo(position[0], position[1]);
   }
   /**
-   * Empty implementation
+   * Scrolls to an element and attempts to focus the element.
+   *
+   * Note that the function name here is misleading in that the target string may be an ID for a
+   * non-anchor element.
+   *
+   * @param target The ID of an element or name of the anchor.
+   *
+   * @see https://html.spec.whatwg.org/#the-indicated-part-of-the-document
+   * @see https://html.spec.whatwg.org/#scroll-to-fragid
    */
-  scrollToAnchor(anchor) {
+  scrollToAnchor(target) {
+    const elSelected = findAnchorFromDocument(this.document, target);
+    if (elSelected) {
+      this.scrollToElement(elSelected);
+      elSelected.focus();
+    }
   }
   /**
-   * Empty implementation
+   * Disables automatic scroll restoration provided by the browser.
    */
   setHistoryScrollRestoration(scrollRestoration) {
+    this.window.history.scrollRestoration = scrollRestoration;
+  }
+  /**
+   * Scrolls to an element using the native offset and the specified offset set on this scroller.
+   *
+   * The offset can be used when we know that there is a floating header and scrolling naively to an
+   * element (ex: `scrollIntoView`) leaves the element hidden behind the floating header.
+   */
+  scrollToElement(el) {
+    const rect = el.getBoundingClientRect();
+    const left = rect.left + this.window.pageXOffset;
+    const top = rect.top + this.window.pageYOffset;
+    const offset = this.offset();
+    this.window.scrollTo(left - offset[0], top - offset[1]);
   }
 };
+function findAnchorFromDocument(document2, target) {
+  const documentResult = document2.getElementById(target) || document2.getElementsByName(target)[0];
+  if (documentResult) {
+    return documentResult;
+  }
+  if (typeof document2.createTreeWalker === "function" && document2.body && typeof document2.body.attachShadow === "function") {
+    const treeWalker = document2.createTreeWalker(document2.body, NodeFilter.SHOW_ELEMENT);
+    let currentNode = treeWalker.currentNode;
+    while (currentNode) {
+      const shadowRoot = currentNode.shadowRoot;
+      if (shadowRoot) {
+        const result = shadowRoot.getElementById(target) || shadowRoot.querySelector(`[name="${target}"]`);
+        if (result) {
+          return result;
+        }
+      }
+      currentNode = treeWalker.nextNode();
+    }
+  }
+  return null;
+}
 var PLACEHOLDER_QUALITY = "20";
 function getUrl(src, win) {
   return isAbsoluteUrl(src) ? new URL(src) : new URL(src, win.location.href);
@@ -4057,7 +4123,7 @@ var PreconnectLinkChecker = class _PreconnectLinkChecker {
    * @param originalNgSrc ngSrc value
    */
   assertPreconnect(rewrittenSrc, originalNgSrc) {
-    if (true) return;
+    if (false) return;
     const imgUrl = getUrl(rewrittenSrc, this.window);
     if (this.blocklist.has(imgUrl.hostname) || this.alreadySeen.has(imgUrl.origin)) return;
     this.alreadySeen.add(imgUrl.origin);
@@ -4179,9 +4245,12 @@ var OVERSIZED_IMAGE_TOLERANCE = 1e3;
 var FIXED_SRCSET_WIDTH_LIMIT = 1920;
 var FIXED_SRCSET_HEIGHT_LIMIT = 1080;
 var PLACEHOLDER_BLUR_AMOUNT = 15;
+var PLACEHOLDER_DIMENSION_LIMIT = 1e3;
 var DATA_URL_WARN_LIMIT = 4e3;
 var DATA_URL_ERROR_LIMIT = 1e4;
 var BUILT_IN_LOADERS = [imgixLoaderInfo, imageKitLoaderInfo, cloudinaryLoaderInfo, netlifyLoaderInfo];
+var PRIORITY_COUNT_THRESHOLD = 10;
+var IMGS_WITH_PRIORITY_ATTR_COUNT = 0;
 var NgOptimizedImage = class _NgOptimizedImage {
   imageLoader = inject(IMAGE_LOADER);
   config = processConfig(inject(IMAGE_CONFIG));
@@ -4331,7 +4400,7 @@ var NgOptimizedImage = class _NgOptimizedImage {
       if (this.priority) {
         const checker = this.injector.get(PreconnectLinkChecker);
         checker.assertPreconnect(this.getRewrittenSrc(), this.ngSrc);
-        if (false) {
+        if (true) {
           const applicationRef = this.injector.get(ApplicationRef);
           assetPriorityCountBelowThreshold(applicationRef);
         }
@@ -4364,7 +4433,7 @@ var NgOptimizedImage = class _NgOptimizedImage {
         this.setHostAttribute("sizes", "auto, 100vw");
       }
     }
-    if (this.priority) {
+    if (false) {
       const preloadLinkCreator = this.injector.get(PreloadLinkCreator);
       preloadLinkCreator.createPreloadLinkTag(this.renderer, this.getRewrittenSrc(), rewrittenSrcset, this.sizes);
     }
@@ -4387,7 +4456,7 @@ var NgOptimizedImage = class _NgOptimizedImage {
         }
       }
     }
-    if (ngDevMode && changes["placeholder"]?.currentValue && true && false) {
+    if (ngDevMode && changes["placeholder"]?.currentValue && true && true) {
       assertPlaceholderDimensions(this, this.imgElement);
     }
   }
@@ -4876,6 +4945,27 @@ function assertNoNgSrcsetWithoutLoader(dir, imageLoader) {
 function assertNoLoaderParamsWithoutLoader(dir, imageLoader) {
   if (dir.loaderParams && imageLoader === noopImageLoader) {
     console.warn(formatRuntimeError(2963, `${imgDirectiveDetails(dir.ngSrc)} the \`loaderParams\` attribute is present but no image loader is configured (i.e. the default one is being used), which means that the loaderParams data will not be consumed and will not affect the URL. To fix this, provide a custom loader or remove the \`loaderParams\` attribute from the image.`));
+  }
+}
+function assetPriorityCountBelowThreshold(appRef) {
+  return __async(this, null, function* () {
+    if (IMGS_WITH_PRIORITY_ATTR_COUNT === 0) {
+      IMGS_WITH_PRIORITY_ATTR_COUNT++;
+      yield appRef.whenStable();
+      if (IMGS_WITH_PRIORITY_ATTR_COUNT > PRIORITY_COUNT_THRESHOLD) {
+        console.warn(formatRuntimeError(2966, `NgOptimizedImage: The "priority" attribute is set to true more than ${PRIORITY_COUNT_THRESHOLD} times (${IMGS_WITH_PRIORITY_ATTR_COUNT} times). Marking too many images as "high" priority can hurt your application's LCP (https://web.dev/lcp). "Priority" should only be set on the image expected to be the page's LCP element.`));
+      }
+    } else {
+      IMGS_WITH_PRIORITY_ATTR_COUNT++;
+    }
+  });
+}
+function assertPlaceholderDimensions(dir, imgElement) {
+  const computedStyle = window.getComputedStyle(imgElement);
+  let renderedWidth = parseFloat(computedStyle.getPropertyValue("width"));
+  let renderedHeight = parseFloat(computedStyle.getPropertyValue("height"));
+  if (renderedWidth > PLACEHOLDER_DIMENSION_LIMIT || renderedHeight > PLACEHOLDER_DIMENSION_LIMIT) {
+    console.warn(formatRuntimeError(2967, `${imgDirectiveDetails(dir.ngSrc)} it uses a placeholder image, but at least one of the dimensions attribute (height or width) exceeds the limit of ${PLACEHOLDER_DIMENSION_LIMIT}px. To fix this, use a smaller image as a placeholder.`));
   }
 }
 function callOnLoadIfImageIsLoaded(img, callback) {
@@ -6052,8 +6142,6 @@ var BrowserModule = class _BrowserModule {
 })();
 
 // node_modules/@angular/common/fesm2022/module-BHk9jdTn.mjs
-var import_operators = __toESM(require_operators(), 1);
-var import_rxjs3 = __toESM(require_cjs(), 1);
 var HttpHandler = class {
 };
 var HttpBackend = class {
@@ -7072,30 +7160,30 @@ var HttpClient = class _HttpClient {
         transferCache: options.transferCache
       });
     }
-    const events$ = (0, import_rxjs3.of)(req).pipe((0, import_operators.concatMap)((req2) => this.handler.handle(req2)));
+    const events$ = of(req).pipe(concatMap((req2) => this.handler.handle(req2)));
     if (first instanceof HttpRequest || options.observe === "events") {
       return events$;
     }
-    const res$ = events$.pipe((0, import_operators.filter)((event) => event instanceof HttpResponse));
+    const res$ = events$.pipe(filter((event) => event instanceof HttpResponse));
     switch (options.observe || "body") {
       case "body":
         switch (req.responseType) {
           case "arraybuffer":
-            return res$.pipe((0, import_operators.map)((res) => {
+            return res$.pipe(map((res) => {
               if (res.body !== null && !(res.body instanceof ArrayBuffer)) {
                 throw new RuntimeError(2806, ngDevMode && "Response is not an ArrayBuffer.");
               }
               return res.body;
             }));
           case "blob":
-            return res$.pipe((0, import_operators.map)((res) => {
+            return res$.pipe(map((res) => {
               if (res.body !== null && !(res.body instanceof Blob)) {
                 throw new RuntimeError(2807, ngDevMode && "Response is not a Blob.");
               }
               return res.body;
             }));
           case "text":
-            return res$.pipe((0, import_operators.map)((res) => {
+            return res$.pipe(map((res) => {
               if (res.body !== null && typeof res.body !== "string") {
                 throw new RuntimeError(2808, ngDevMode && "Response is not a string.");
               }
@@ -7103,7 +7191,7 @@ var HttpClient = class _HttpClient {
             }));
           case "json":
           default:
-            return res$.pipe((0, import_operators.map)((res) => res.body));
+            return res$.pipe(map((res) => res.body));
         }
       case "response":
         return res$;
@@ -7235,7 +7323,7 @@ var FetchBackend = class _FetchBackend {
   })?.fetch ?? ((...args) => globalThis.fetch(...args));
   ngZone = inject(NgZone);
   handle(request) {
-    return new import_rxjs3.Observable((observer) => {
+    return new Observable((observer) => {
       const aborter = new AbortController();
       this.doRequest(request, aborter.signal, observer).then(noop, (error) => observer.error(new HttpErrorResponse({
         error
@@ -7446,7 +7534,7 @@ function legacyInterceptorFnFactory() {
     const contributeToStability = inject(REQUESTS_CONTRIBUTE_TO_STABILITY);
     if (contributeToStability) {
       const taskId = pendingTasks.add();
-      return chain(req, handler).pipe((0, import_operators.finalize)(() => pendingTasks.remove(taskId)));
+      return chain(req, handler).pipe(finalize(() => pendingTasks.remove(taskId)));
     } else {
       return chain(req, handler);
     }
@@ -7479,7 +7567,7 @@ var HttpInterceptorHandler = class _HttpInterceptorHandler extends HttpHandler {
     }
     if (this.contributeToStability) {
       const taskId = this.pendingTasks.add();
-      return this.chain(initialRequest, (downstreamRequest) => this.backend.handle(downstreamRequest)).pipe((0, import_operators.finalize)(() => this.pendingTasks.remove(taskId)));
+      return this.chain(initialRequest, (downstreamRequest) => this.backend.handle(downstreamRequest)).pipe(finalize(() => this.pendingTasks.remove(taskId)));
     } else {
       return this.chain(initialRequest, (downstreamRequest) => this.backend.handle(downstreamRequest));
     }
@@ -7547,7 +7635,7 @@ var JsonpClientBackend = class _JsonpClientBackend {
     if (req.headers.keys().length > 0) {
       throw new Error(JSONP_ERR_HEADERS_NOT_SUPPORTED);
     }
-    return new import_rxjs3.Observable((observer) => {
+    return new Observable((observer) => {
       const callback = this.nextCallback();
       const url = req.urlWithParams.replace(/=JSONP_CALLBACK(&|$)/, `=${callback}$1`);
       const node = this.document.createElement("script");
@@ -7696,9 +7784,9 @@ var HttpXhrBackend = class _HttpXhrBackend {
       throw new RuntimeError(-2800, (typeof ngDevMode === "undefined" || ngDevMode) && `Cannot make a JSONP request without JSONP support. To fix the problem, either add the \`withJsonpSupport()\` call (if \`provideHttpClient()\` is used) or import the \`HttpClientJsonpModule\` in the root NgModule.`);
     }
     const xhrFactory = this.xhrFactory;
-    const source = xhrFactory.ɵloadImpl ? (0, import_rxjs3.from)(xhrFactory.ɵloadImpl()) : (0, import_rxjs3.of)(null);
-    return source.pipe((0, import_operators.switchMap)(() => {
-      return new import_rxjs3.Observable((observer) => {
+    const source = xhrFactory.ɵloadImpl ? from(xhrFactory.ɵloadImpl()) : of(null);
+    return source.pipe(switchMap(() => {
+      return new Observable((observer) => {
         const xhr = xhrFactory.build();
         xhr.open(req.method, req.urlWithParams);
         if (req.withCredentials) {
@@ -8188,8 +8276,6 @@ var HttpClientJsonpModule = class _HttpClientJsonpModule {
 })();
 
 // node_modules/@angular/common/fesm2022/http.mjs
-var import_rxjs4 = __toESM(require_cjs(), 1);
-var import_operators2 = __toESM(require_operators(), 1);
 var httpResource = (() => {
   const jsonFn = makeHttpResourceFn("json");
   jsonFn.arrayBuffer = makeHttpResourceFn("arraybuffer");
@@ -8328,10 +8414,10 @@ function transferCacheInterceptorFn(req, next) {
   const originMap = inject(HTTP_TRANSFER_CACHE_ORIGIN_MAP, {
     optional: true
   });
-  if (false) {
+  if (originMap) {
     throw new RuntimeError(2803, ngDevMode && "Angular detected that the `HTTP_TRANSFER_CACHE_ORIGIN_MAP` token is configured and present in the client side code. Please ensure that this token is only provided in the server code of the application.");
   }
-  const requestUrl = originMap ? mapRequestOriginUrl(req.url, originMap) : req.url;
+  const requestUrl = false ? mapRequestOriginUrl(req.url, originMap) : req.url;
   const storeKey = makeCacheKey(req, requestUrl);
   const response = transferState.get(storeKey, null);
   let headersToInclude = globalOptions.includeHeaders;
@@ -8360,7 +8446,7 @@ function transferCacheInterceptorFn(req, next) {
     if (typeof ngDevMode === "undefined" || ngDevMode) {
       headers = appendMissingHeadersDetection(req.url, headers, headersToInclude ?? []);
     }
-    return (0, import_rxjs4.of)(new HttpResponse({
+    return of(new HttpResponse({
       body,
       headers,
       status,
@@ -8368,8 +8454,8 @@ function transferCacheInterceptorFn(req, next) {
       url
     }));
   }
-  return next(req).pipe((0, import_operators2.tap)((event) => {
-    if (event instanceof HttpResponse && true && true) {
+  return next(req).pipe(tap((event) => {
+    if (event instanceof HttpResponse && true && false) {
       transferState.set(storeKey, {
         [BODY]: event.body,
         [HEADERS]: getFilteredHeaders(event.headers, headersToInclude),
@@ -8383,19 +8469,6 @@ function transferCacheInterceptorFn(req, next) {
 }
 function hasAuthHeaders(req) {
   return req.headers.has("authorization") || req.headers.has("proxy-authorization");
-}
-function getFilteredHeaders(headers, includeHeaders) {
-  if (!includeHeaders) {
-    return {};
-  }
-  const headersMap = {};
-  for (const key of includeHeaders) {
-    const values = headers.getAll(key);
-    if (values !== null) {
-      headersMap[key] = values;
-    }
-  }
-  return headersMap;
 }
 function sortAndConcatParams(params) {
   return [...params.keys()].sort().map((k) => `${k}=${params.getAll(k)}`).join("&");
@@ -8472,22 +8545,6 @@ function appendMissingHeadersDetection(url, headers, headersToInclude) {
       };
     }
   });
-}
-function mapRequestOriginUrl(url, originMap) {
-  const origin = new URL(url, "resolve://").origin;
-  const mappedOrigin = originMap[origin];
-  if (!mappedOrigin) {
-    return url;
-  }
-  if (typeof ngDevMode === "undefined" || ngDevMode) {
-    verifyMappedOrigin(mappedOrigin);
-  }
-  return url.replace(origin, mappedOrigin);
-}
-function verifyMappedOrigin(url) {
-  if (new URL(url, "resolve://").pathname !== "/") {
-    throw new RuntimeError(2804, `Angular detected a URL with a path segment in the value provided for the \`HTTP_TRANSFER_CACHE_ORIGIN_MAP\` token: ${url}. The map should only contain origins without any other segments.`);
-  }
 }
 
 // node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs
@@ -9230,18 +9287,12 @@ var VERSION2 = new Version("19.2.6");
 export {
   DOCUMENT,
   getDOM,
-  setRootDomAdapter,
-  PlatformLocation,
   LOCATION_INITIALIZED,
   LocationStrategy,
-  APP_BASE_HREF,
   PathLocationStrategy,
   Location,
   HashLocationStrategy,
-  PLATFORM_SERVER_ID,
-  XhrFactory,
   ViewportScroller,
-  NullViewportScroller,
   EVENT_MANAGER_PLUGINS,
   EventManager,
   EventManagerPlugin,
@@ -9257,7 +9308,6 @@ export {
   provideProtractorTestingSupport,
   platformBrowser,
   BrowserModule,
-  HTTP_ROOT_INTERCEPTOR_FNS,
   Meta,
   Title,
   enableDebugTools,
@@ -9358,4 +9408,4 @@ export {
    * License: MIT
    *)
 */
-//# sourceMappingURL=chunk-5KKPXQVT.js.map
+//# sourceMappingURL=chunk-XZY2EHLS.js.map
