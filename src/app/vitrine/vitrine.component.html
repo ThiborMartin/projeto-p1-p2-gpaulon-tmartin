@@ -1,278 +1,49 @@
 <h3 class="text-center text-white bg-danger py-3">PRODUTOS NOVOS E OFERTAS</h3>
 
+<div class="alert alert-info" *ngIf="mensagem.length>0">
+  {{mensagem}}</div>
+
 <div class="row justify-content-center min-vh-100">
-  <div class="col-12 col-sm-6 col-md-4">
+  <div class="col-12 col-sm-6 col-md-4" *ngFor="let obj of produtos">
     <figure class="text-center">
-      <a href="#" data-bs-toggle="modal" data-bs-target="#modaldark3"> <img src="https://images.kabum.com.br/produtos/fotos/sync_mirakl/520417/xlarge/Gabinete-Gamer-Gamdias-Neso-P1-B-FULL-Tower-Preto_1741814437.png" class="img-fluid rounded" style="height: 300px; object-fit: contain;" alt="PC GAMER - DARK3"></a>
-      <figcaption>PC GAMER - DARK3</figcaption>
-      <p class="card-text text-danger">R$ 5800,00</p>
-      <a href="cesta" class="btn btn-danger">Adicionar ao Carrinho</a>
+      <a href="#" data-bs-toggle="modal" [attr.data-bs-target]="'#modal' + obj.codigo">
+        <img src="produto{{obj.codigo}}.png" class="img-fluid rounded" style="height: 300px; object-fit: contain;" alt="Card Image">
+      </a>
+      <figcaption><h4 class="card-title">{{obj.nome}}</h4></figcaption>
+      <p class="card-text text-danger">R${{obj.valor}},00</p>
+      <button class="btn btn-danger" (click)="comprar(obj);">Adicionar ao carrinho</button>
     </figure>
-  </div>
 
-  <div class="col-12 col-sm-6 col-md-4">
-    <figure class="text-center ">
-      <a href="#" data-bs-toggle="modal" data-bs-target="#modalslack"><img src="https://shopinfo.vteximg.com.br/arquivos/ids/1551002-1000-1000/1.png?v=638452662793700000" class="img-fluid rounded" style="height: 300px; object-fit: contain;" alt="PC GAMER -SLACK2"></a>
-      <figcaption>PC GAMER -SLACK2</figcaption>
-      <p class="card-text text-danger">R$ 3500,00</p>
-      <a href="cesta" class="btn btn-danger">Adicionar ao Carrinho</a>
-    </figure>
-  </div>
+    <!-- Modal DENTRO do ngFor -->
+    <div class="modal fade" [id]="'modal' + obj.codigo">
+      <div class="modal-dialog">
+        <div class="modal-content">
 
-  <div class="col-12 col-sm-6 col-md-4">
-    <figure class="text-center">
-      <a href="#" data-bs-toggle="modal" data-bs-target="#modal4060"><img src="https://img.terabyteshop.com.br/produto/g/placa-de-video-galax-nvidia-geforce-rtx-4060-1-click-oc-2x-8gb-gddr6-dlss-ray-tracing-46nsl8md8loc_175397.png" class="img-fluid rounded" style="height: 300px; object-fit: contain;" alt="GEFORCE - RTX 4060"></a>
-      <figcaption>GEFORCE - RTX 4060</figcaption>
-      <p class="card-text text-danger">R$ 3100,00</p>
-      <a href="cesta" class="btn btn-danger">Adicionar ao Carrinho</a>
-    </figure>
-  </div>
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title text-center text-dark">Detalhes de {{obj.nome}}</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
 
-  <div class="col-12 col-sm-6 col-md-4">
-    <figure class="text-center">
-      <a href="#"  data-bs-toggle="modal" data-bs-target="#modal6600">><img src="https://img.terabyteshop.com.br/produto/g/placa-de-video-gigabyte-amd-radeon-rx-6600-eagle-8g-8gb-gddr6-fsr-ray-tracing_142715.png" class="img-fluid rounded" style="height: 300px; object-fit: contain;" alt="AMD- RADEON RX 6600"></a>
-      <figcaption>AMD- RADEON RX 6600</figcaption>
-      <p class="card-text text-danger">R$ 1800,00</p>
-      <a href="cesta" class="btn btn-danger">Adicionar ao Carrinho</a>
-    </figure>
-  </div>
+          <!-- Modal body -->
+          <div class="modal-body text-center">
+            <img class="img-fluid text-center" src="produto{{obj.codigo}}.png" alt="Modal Body"><br>
+          </div>
 
-  <div class="col-12 col-sm-6 col-md-4">
-    <figure class="text-center">
-      <a href="#" data-bs-toggle="modal" data-bs-target="#modalodyssey">><img src="https://m.media-amazon.com/images/I/61oUUcXs1iL._AC_SX679_.jpg" class="img-fluid rounded" style="height: 300px; object-fit: contain;" alt="Monitor Gamer - Samsung ODYSSEY 34' "></a>
-      <figcaption>Monitor Gamer - Samsung ODYSSEY 34' </figcaption>
-      <p class="card-text text-danger">R$ 2600,00</p>
-      <a href="cesta" class="btn btn-danger">Adicionar ao Carrinho</a>
-    </figure>
-  </div>
+          <div class="modal-body">
+            <p>{{obj.descritivo}}</p>
+            <h1 class="text-dark">R${{obj.valor}},00</h1>
+          </div>
 
-  <div class="col-12 col-sm-6 col-md-4">
-    <figure class="text-center">
-      <a href="#" data-bs-toggle="modal" data-bs-target="#modalalien"><img src="https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/peripherals/monitors/alienware/aw2724dm/media-gallery/monitor-alienware-aw2724dm-black-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&hei=804&wid=1066&qlt=100,1&resMode=sharp2&size=1066,804&chrss=full" class="img-fluid rounded" style="height: 300px; object-fit: contain;" alt="MONITOR - ALIENWARE 32'"></a>
-      <figcaption>MONITOR - ALIENWARE 32'</figcaption>
-      <p class="card-text text-danger">R$ 1700,00</p>
-      <a href="cesta" class="btn btn-danger">Adicionar ao Carrinho</a>
-    </figure>
-  </div>
-  
-  <!--NOVOS-->
-  <div class="col-12 col-sm-6 col-md-4">
-    <figure class="text-center">
-      <a href="#" data-bs-toggle="modal" data-bs-target="#modalalien"><img src="https://img.terabyteshop.com.br/archive/1931783510/HTML%20Headset%20Gamer%20Havit%20H2035U%20-%203.png" class="img-fluid rounded" style="height: 300px; object-fit: contain;" alt="HEADSET - HAVIT H2035U"></a>
-      <figcaption>HEADSET - HAVIT H2035U</figcaption>
-      <p class="card-text text-danger">R$ 120,00</p>
-      <a href="cesta" class="btn btn-danger">Adicionar ao Carrinho</a>
-    </figure>
-  </div>
-
-  <div class="col-12 col-sm-6 col-md-4">
-    <figure class="text-center">
-      <a href="#" data-bs-toggle="modal" data-bs-target="#modalalien"><img src="https://cdn.awsli.com.br/600x1000/2557/2557636/produto/249729900/h370--9--bh9r0hm9vn.png" class="img-fluid rounded" style="height: 300px; object-fit: contain;" alt="HEADSET - RED DRAGON CADMUS RGB"></a>
-      <figcaption>HEADSET - RED DRAGON CADMUS RGB</figcaption>
-      <p class="card-text text-danger">R$ 180,00</p>
-      <a href="cesta" class="btn btn-danger">Adicionar ao Carrinho</a>
-    </figure>
-  </div>
-
-  <div class="col-12 col-sm-6 col-md-4">
-    <figure class="text-center">
-      <a href="#" data-bs-toggle="modal" data-bs-target="#modalalien"><img src="https://static.wixstatic.com/media/71a6c2_7bbb405304144fdfb8dba895d7441219~mv2.png/v1/crop/x_0,y_353,w_1600,h_893/fill/w_644,h_359,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/K606-R%20(2).png" class="img-fluid rounded" style="height: 300px; object-fit: contain;" alt="TECLADO - RED DRAGON VALHEIM RAINBOW"></a>
-      <figcaption>TECLADO - RED DRAGON VALHEIM RAINBOW</figcaption>
-      <p class="card-text text-danger">R$ 299,90</p>
-      <a href="cesta" class="btn btn-danger">Adicionar ao Carrinho</a>
-    </figure>
-  </div>
-</div>
-
-<div class="modal" id="modaldark3">
-  <div class="modal-dialog">
-    <div class="modal-content">
-
-      <!-- Modal Header -->
-      <div class="modal-header">
-        <h4 class="modal-title text-center text-dark">Detalhes de DARK3</h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-
-      <!-- Modal body -->
-      <div class="modal-body  text-center">
-        <img class="img-fluid  text-center" src="https://images.kabum.com.br/produtos/fotos/sync_mirakl/520417/xlarge/Gabinete-Gamer-Gamdias-Neso-P1-B-FULL-Tower-Preto_1741814437.png"  alt="PC GAMER - DARK3"><br>
-      </div>
-
-      <div class="modal-body">
-        *   Gabinete Gamer;<br>
-        *   4 fans RGB;<br>
-        *   Water Cooler RGB<br>
-        *   Intel i7 - 12700GF;<br>
-        *   GPU - RTX 5090 Super;<br>
-        *   Fonte modular 1050w.
-        <h1 class="text-dark">R$: 5800,00</h1>
-      </div>
-
-      <!-- Modal footer -->
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-        <a href="carrinho" class="btn btn-primary">Adicionar ao Carrinho</a>
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
+            <button class="btn btn-primary" (click)="comprar(obj)">Comprar</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<div class="modal" id="modalslack">
-  <div class="modal-dialog">
-    <div class="modal-content">
 
-      <!-- Modal Header -->
-      <div class="modal-header">
-        <h4 class="modal-title text-center text-dark">Detalhe de SLACK2</h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-
-      <!-- Modal body -->
-      <div class="modal-body text-center">
-        <img src="https://shopinfo.vteximg.com.br/arquivos/ids/1551002-1000-1000/1.png?v=638452662793700000" class="img-thumbnail" alt="PC GAMER - SLACK2">
-      </div>
-
-      <div class="modal-body">
-        *   Gabinete Gamer;<br>
-        *   7 fans RGB;<br>
-        *   Intel i5 - 10400GF;<br>
-        *   GPU - GTX 1050TI;<br>
-        *   Fonte Thunder 500w.
-        <h1 class="text-dark">R$: 3500,00</h1>
-      </div>
-
-      <!-- Modal footer -->
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-        <a href="carrinho" class="btn btn-primary">Adicionar ao Carrinho</a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal" id="modal4060">
-  <div class="modal-dialog">
-    <div class="modal-content">
-
-      <!-- Modal Header -->
-      <div class="modal-header">
-        <h4 class="modal-title text-center text-dark">Detalhe de GEFORCE - RTX 4060</h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-
-      <!-- Modal body -->
-      <div class="modal-body text-center">
-        <img src="https://img.terabyteshop.com.br/produto/g/placa-de-video-galax-nvidia-geforce-rtx-4060-1-click-oc-2x-8gb-gddr6-dlss-ray-tracing-46nsl8md8loc_175397.png" class="img-thumbnail" alt="RTX 4060">
-      </div>
-
-      <div class="modal-body">   
-        *   8GB GDDR6;<br>
-        *   Clock de memória: 17 Gbps ;<br>
-        *   Entradas: 3 x DisplayPort 1.4a | 1 x HDMI 2.1a.
-        <h1 class="text-dark">R$: 3100,00</h1>
-      </div>
-
-      <!-- Modal footer -->
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-        <a href="carrinho" class="btn btn-primary">Adicionar ao Carrinho</a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal" id="modal6600">
-  <div class="modal-dialog">
-    <div class="modal-content">
-
-      <!-- Modal Header -->
-      <div class="modal-header text-center">
-        <h4 class="modal-title text-center text-dark">Detalhes de AMD - RX 6600</h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-
-      <!-- Modal body -->
-      <div class="modal-body text-center">
-        <img src="https://img.terabyteshop.com.br/produto/g/placa-de-video-gigabyte-amd-radeon-rx-6600-eagle-8g-8gb-gddr6-fsr-ray-tracing_142715.png" class="img-thumbnail" alt="RX 6600">
-      </div>
-
-      <div class="modal-body"> 
-        *   8GB GDDR6;<br>
-        *   Clock de memória: 14 Gbps;<br>
-        *   1 x HDMI 2.1 VRR 3 x DisplayPort 1.4 com DSC;<br>
-        <h1 class="text-dark">R$: 1800,00</h1>
-      </div>
-
-      <!-- Modal footer -->
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-        <a href="carrinho" class="btn btn-primary">Adicionar ao Carrinho</a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal" id="modalodyssey">
-  <div class="modal-dialog">
-    <div class="modal-content">
-
-      <!-- Modal Header -->
-      <div class="modal-header">
-        <h4 class="modal-title text-center text-dark">Detalhe de MONITOR ODYSSEY 34'</h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-
-      <!-- Modal body -->
-      <div class="modal-body text-center">
-        <img src="https://m.media-amazon.com/images/I/61oUUcXs1iL._AC_SX679_.jpg" class="img-thumbnail" alt="MONITOR ODYSSEY 34">
-      </div>
-
-      <div class="modal-body">
-        *   Ultra WQHD - 4k <br>
-        *   180Hz;<br>
-        *   Tela Ultrawide;<br>
-        *   DIsplay port e HDMI;
-        <h1 class="text-dark">R$: 2600,00</h1>
-      </div>
-
-      <!-- Modal footer -->
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-        <a href="carrinho" class="btn btn-primary">Adicionar ao Carrinho</a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal" id="modalalien">
-  <div class="modal-dialog">
-    <div class="modal-content">
-
-      <!-- Modal Header -->
-      <div class="modal-header">
-        <h4 class="modal-title text-center text-dark">Detalhes de MONITOR ALIENWARE 32'</h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-
-      <!-- Modal body -->
-      <div class="modal-body text-center">
-        <img src="https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/peripherals/monitors/alienware/aw2724dm/media-gallery/monitor-alienware-aw2724dm-black-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&hei=804&wid=1066&qlt=100,1&resMode=sharp2&size=1066,804&chrss=full" class="img-thumbnail" alt="MONITOR ALIENWARE 32">
-      </div>
-
-      <div class="modal-body">
-        *   FullHD 4k - QLED<br>
-        *   180Hz;<br>
-        *   Tela Ultrawide;<br>
-        *   Entrada HDMI;
-        <h1 class="text-dark">R$: 1700,00</h1>
-      </div>
-
-      <!-- Modal footer -->
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
-        <a href="carrinho" class="btn btn-primary">Adicionar ao Carrinho</a>
-      </div>
-    </div>
-  </div>
-</div>

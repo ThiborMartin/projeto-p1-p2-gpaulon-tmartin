@@ -8,8 +8,8 @@
         </a>
 
         <form class="d-flex mx-auto" role="search" style="max-width: 500px; width: 100%;">
-          <input class="form-control me-2" type="search" placeholder="Buscar produtos..." aria-label="Search">
-          <button class=" btn btn-light" type="submit">🔍</button>
+          <input class="form-control me-2" type="search" placeholder="Buscar produtos..." [(ngModel)]="termoBusca" aria-label="Search" [ngModelOptions]="{standalone: true}">
+          <button type="button" class=" btn btn-light" (click)="buscar()">🔍</button>
         </form>
         
          <a href="/login"class="btn btn-outline-light" type="button">Login / Cadastro </a>
@@ -18,7 +18,10 @@
     <nav>
       <ul class="nav nav-tabs nav-justified mt-2">
         <li class="nav-item">
-          <a class="nav-link text-white" href="vitrine">MENU</a>
+          <a class="nav-link text-white" href="vitrine">Pagina Inicial</a>
+        </li>
+        <li class = "nav-item">
+          <a class="nav-link text-white" href="cesta">Carrinho</a>
         </li>
       </ul>
     </nav>
