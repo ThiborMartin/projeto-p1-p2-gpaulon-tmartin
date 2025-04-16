@@ -23,11 +23,6 @@ export class VitrineComponent {
     {"codigo":9, "nome":"Teclado RedDragon Valheim Rainbow", "valor":300.00, "descritivo":"Switches Redragon Brown, Acionamento Mecânico, Hot Swap, Formato Full Size, Layout ABNT2."}
   ];
 
-  public detalhes(obj: Produto){
-    localStorage.setItem("produto", JSON.stringify(obj));
-    location.href="./detalhe";
-  }
-
   public comprar(item: Produto){
     let json = localStorage.getItem("cesta");
     let cesta = new Cesta();
@@ -36,6 +31,6 @@ export class VitrineComponent {
     } 
     cesta.itens.push(item);
     localStorage.setItem("cesta", JSON.stringify(cesta));
-    location.href="./cesta";
+    this.mensagem = " adicionado ao carrinho";
   }
 }

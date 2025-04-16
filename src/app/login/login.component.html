@@ -1,5 +1,5 @@
 <div class="row mt-4 min-vh-100 d-flex align-items-center">
-
+    <div class="alert alert-warning" *ngIf="mensagem.length>0">{{mensagem}}</div>
     <div class="col-md-6 border-end ">
         <div class="text-center">
             <h1>Já tenho cadastro</h1>
@@ -7,14 +7,14 @@
         <form>
             <div class="mb-3">
                 <label for="email" class="form-label">E-mail</label>
-                <input type="email" class="form-control" id="email" placeholder="Digite seu e-mail">
+                <input type="email" class="form-control" id="email" placeholder="Digite seu e-mail" [ngModelOptions]="{standalone: true}" [(ngModel)]="obj.email">
             </div>
             <div class="mb-3">
                 <label for="senha" class="form-label">Senha</label>
-                <input type="password" class="form-control" id="senha" placeholder="Digite sua senha">
+                <input type="password" class="form-control" id="senha" placeholder="Digite sua senha" [ngModelOptions]="{standalone: true}" [(ngModel)]="obj.senha">
             </div>
             <div class="text-center ">
-            <button type="submit" class="btn btn-primary">Entrar</button>
+            <button type="submit" class="btn btn-primary" (click)="logar()">Entrar</button>
             <button type="submit" class="btn btn-danger m-2">Esqueci minha senha</button>
             </div>
         </form>

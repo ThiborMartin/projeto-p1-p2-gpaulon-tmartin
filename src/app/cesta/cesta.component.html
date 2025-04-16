@@ -1,1 +1,22 @@
-<p>cesta works!</p>
+<h4>Cesta de compras</h4>
+<div class="alert alert-info">{{mensagem}}</div>
+
+<table class="table table-stripped">
+    <thead>
+        <tr>
+          <th></th>  
+          <th>nome</th>
+          <th>valor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of obj.itens">
+          <td><img src="produto{{item.codigo}}.png" width="50px"></td>
+          <td>{{item.nome}}</td>
+          <td>R$ {{item.valor}}</td>
+        </tr>
+      </tbody>
+</table>
+<br>
+<button (click)="limpar();" class="btn btn-warning">Limpar cesta</button>
+<button class="btn btn-success">Gravar pedido</button>

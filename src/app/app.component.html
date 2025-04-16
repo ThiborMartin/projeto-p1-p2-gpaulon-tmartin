@@ -11,8 +11,13 @@
           <input class="form-control me-2" type="search" placeholder="Buscar produtos..." [(ngModel)]="termoBusca" aria-label="Search" [ngModelOptions]="{standalone: true}">
           <button type="button" class=" btn btn-light" (click)="buscar()">🔍</button>
         </form>
-        
-         <a href="/login"class="btn btn-outline-light" type="button">Login / Cadastro </a>
+
+        <a *ngIf="clienteLogado?.logado === true && clienteLogado; else loginLink" class="btn btn-outline-light" (click)="logout()">Olá, {{clienteLogado.nome}} (Sair)</a>
+
+        <ng-template #loginLink>
+          <a href="login" class="btn btn-outline-light">Login / Cadastro</a>
+        </ng-template>
+
       </div>
     </nav>
     <nav>
@@ -21,7 +26,7 @@
           <a class="nav-link text-white" href="vitrine">Pagina Inicial</a>
         </li>
         <li class = "nav-item">
-          <a class="nav-link text-white" href="cesta">Carrinho</a>
+          <a class="nav-link text-white" href="cesta">Carrinho 🛒</a>
         </li>
       </ul>
     </nav>
