@@ -6,4 +6,5 @@ export class Cliente {
     public cpf: string = "";
     public senha: string = "";
     public logado: boolean = false;
+    public confirmasenha: string = "";
 }

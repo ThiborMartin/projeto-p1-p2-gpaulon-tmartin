@@ -11,14 +11,14 @@
         <label>Email:</label>
         <input class= "form-control" type="email" id="email" required placeholder="Informe seu email" [ngModelOptions]="{standalone: true}" [(ngModel)]="obj.email"><br>
         <div class="row">
-            <div class="col-md-6 mb-3">
-                <label>Senha:</label>
-                <input class= "form-control"type="password" id="senha" placeholder="Digite uma senha" pattern="/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#])[0-9a-zA-Z$*&@#]{8,}$/" required [ngModelOptions]="{standalone: true}" [(ngModel)]="obj.senha">
-            </div>
-            <div class="col-md-6 mb-3">
-                <label>Confirmação de senha:</label>
-                <input class= "form-control" type="password" id="confirmasenha" placeholder="Redigite a senha" pattern="/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#])[0-9a-zA-Z$*&@#]{8,}$/" required>
-            </div>
+                <div class="col-md-6 mb-3">
+                    <label>Senha:</label>
+                    <input class= "form-control"type="password" id="senha" placeholder="Digite uma senha" pattern="/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#])[0-9a-zA-Z$*&@#]{8,}$/" required [ngModelOptions]="{standalone: true}" [(ngModel)]="obj.senha">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label>Confirmação de senha:</label>
+                    <input class= "form-control" type="password" id="confirmasenha" placeholder="Redigite a senha" pattern="/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#])[0-9a-zA-Z$*&@#]{8,}$/" required [ngModelOptions]="{standalone: true}" [(ngModel)]="obj.confirmasenha">
+                </div>
         </div>
         <label>CPF:</label>
         <input class= "form-control" type="text" id="documento" pattern="[0-9]{9,11}" required placeholder="Ex: xxx.xxx.xxx-xx" [ngModelOptions]="{standalone: true}" [(ngModel)]="obj.cpf"><br>

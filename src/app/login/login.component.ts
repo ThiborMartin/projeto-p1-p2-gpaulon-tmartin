@@ -40,7 +40,7 @@ export class LoginComponent {
 
     if (encontrado) {
       encontrado.logado = true;
-      localStorage.setItem("cliente", JSON.stringify(encontrado)); // marca o cliente logado
+      localStorage.setItem("cliente", JSON.stringify(encontrado)); 
       this.router.navigate(['/vitrine']).then(() => window.location.reload());
     } else {
       this.exibirMensagem("Email ou senha inválidos!!");

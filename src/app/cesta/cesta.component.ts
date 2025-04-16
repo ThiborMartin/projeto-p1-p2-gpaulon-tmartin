@@ -68,6 +68,25 @@ export class CestaComponent {
     }
   }
 
+  atualizarQuantidade(item: Produto) {
+    if (!this.clienteLogado) return;
+    const chaveCesta = `cesta-${this.clienteLogado.email}`;
+    const json = localStorage.getItem(chaveCesta);
+    if (json) {
+      const cesta: Cesta = JSON.parse(json);
+  
+      const itemEncontrado = cesta.itens.find(p => p.codigo === item.codigo);
+      if (itemEncontrado) {
+        itemEncontrado.qtd = item.qtd;
+        itemEncontrado.valorTotal = item.qtd * item.valorUnitario;
+      }
+  
+      cesta.valorTotal = cesta.itens.reduce((soma, i) => soma + i.valorTotal, 0);
+      localStorage.setItem(chaveCesta, JSON.stringify(cesta));
+      this.objCesta = cesta;
+    }
+  }
+
   getTotalItens(): number {
     const chaveCesta = this.clienteLogado ? `cesta-${this.clienteLogado.email}` : "";
     const json = localStorage.getItem(chaveCesta);

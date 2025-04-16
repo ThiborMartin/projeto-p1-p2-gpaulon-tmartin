@@ -29,6 +29,11 @@ export class CadastroComponent {
       lista = JSON.parse(json);
     }
 
+    if(this.obj.senha != this.obj.confirmasenha){
+      this.exibirMensagem("❌ As senhas precisam ser iguais!");
+      return;
+    }
+
     const jaExiste = lista.some(c => c.email === this.obj.email);
     if (jaExiste) {
       this.exibirMensagem("❌ E-mail já cadastrado!");
