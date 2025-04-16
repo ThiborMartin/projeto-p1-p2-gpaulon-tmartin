@@ -24,7 +24,7 @@ export class AppComponent {
     }
   }
   
-  logout() {
+  logout(){
     let json = localStorage.getItem("cliente");
     if(json != null){
       let clienteLogado = JSON.parse(json);

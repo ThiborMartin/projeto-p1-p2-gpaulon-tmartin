@@ -1,0 +1,11 @@
+{
+  "routes": {
+    "/projeto-p1-p2-gpaulon-tmartin": {},
+    "/projeto-p1-p2-gpaulon-tmartin/busca": {},
+    "/projeto-p1-p2-gpaulon-tmartin/cadastro": {},
+    "/projeto-p1-p2-gpaulon-tmartin/cesta": {},
+    "/projeto-p1-p2-gpaulon-tmartin/detalhe": {},
+    "/projeto-p1-p2-gpaulon-tmartin/login": {},
+    "/projeto-p1-p2-gpaulon-tmartin/vitrine": {}
+  }
+}

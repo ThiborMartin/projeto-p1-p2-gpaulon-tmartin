@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Cliente } from '../model/cliente';
 import { Cesta } from '../model/cesta';
+import { Produto } from '../model/produto';
 
 @Component({
   selector: 'app-cesta',
@@ -13,21 +14,97 @@ import { Cesta } from '../model/cesta';
 })
 export class CestaComponent {
   public mensagem: string = "";
+  exibirMensagem(msg: string) {
+    this.mensagem = msg;
+    setTimeout(() => {
+      this.mensagem = '';
+    }, 2500);
+  }
 
-  public obj: Cesta = new Cesta();
+  public objCesta: Cesta = new Cesta();
+  public clienteLogado: Cliente | null = null;
+
+  public cupom: string = '';
+  public descontoAplicado: boolean = false;
+  public valorComDesconto: number = 0;
 
   constructor(router: Router){
-    let json = localStorage.getItem("cesta");
-    if(json==null){
-      this.mensagem = "Sua cesta esta vazia!!!";
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      const jsonCliente = localStorage.getItem("cliente");
+      if (jsonCliente) {
+        this.clienteLogado = JSON.parse(jsonCliente);
+        if (this.clienteLogado?.logado) {
+          const chaveCesta = `cesta-${this.clienteLogado.email}`;
+          const jsonCesta = localStorage.getItem(chaveCesta);
+          if (jsonCesta) {
+            this.objCesta = JSON.parse(jsonCesta);
+            if (!this.objCesta.cliente) {
+              this.exibirMensagem("Sua cesta está vazia!");
+            }
+          } else {
+            this.exibirMensagem("Sua cesta está vazia!");
+          }
+        } else {
+          this.exibirMensagem("Você precisa estar logado para acessar o carrinho");
+        }
+      } else {
+        this.exibirMensagem("Você precisa estar logado para acessar o carrinho");
+      }
     } else {
-      this.obj = JSON.parse(json);
+      this.exibirMensagem("Ambiente sem localStorage");
     }
   }
 
-  limpar(){
-    this.obj = new Cesta();
-    localStorage.removeItem("cesta");
-    this.mensagem = "Sua cesta esta vazia!!!";
+  aplicarDesconto() {
+    const cuponsValidos = ['PAULETE', 'NORTON', 'JANMYLLY'];
+    if (cuponsValidos.includes(this.cupom.toUpperCase())) {
+      const total = this.getTotalValor();
+      this.valorComDesconto = total * 0.9;
+      this.descontoAplicado = true;
+      this.exibirMensagem("✅ Desconto aplicado com sucesso!");
+    } else {
+      this.descontoAplicado = false;
+      this.exibirMensagem("❌ Cupom inválido!");
+    }
+  }
+
+  getTotalItens(): number {
+    const chaveCesta = this.clienteLogado ? `cesta-${this.clienteLogado.email}` : "";
+    const json = localStorage.getItem(chaveCesta);
+    if (!json) return 0;
+
+    const cesta = JSON.parse(json);
+    return cesta.itens.length;
+  }
+
+  getTotalValor(): number {
+    const chaveCesta = this.clienteLogado ? `cesta-${this.clienteLogado.email}` : "";
+    const json = localStorage.getItem(chaveCesta);
+    if (!json) return 0;
+
+    const cesta = JSON.parse(json);
+    return cesta.itens.reduce((total: number, item: Produto) => total + item.valorUnitario * item.qtd, 0);
+  }
+
+  limparItem(item: Produto) {
+    if (!this.clienteLogado) return;
+    const chaveCesta = `cesta-${this.clienteLogado.email}`;
+    const json = localStorage.getItem(chaveCesta);
+    if (json) {
+      const cesta: Cesta = JSON.parse(json);
+      cesta.itens = cesta.itens.filter(p => p.codigo !== item.codigo);
+      cesta.valorTotal = cesta.itens.reduce((soma, i) => soma + i.valorTotal, 0);
+      localStorage.setItem(chaveCesta, JSON.stringify(cesta));
+      this.objCesta = cesta;
+      this.exibirMensagem(`❌ Item "${item.nome}" removido da cesta.`);
+    }
+  }
+
+  limpar() {
+    if (!this.clienteLogado) return;
+    const chaveCesta = `cesta-${this.clienteLogado.email}`;
+    this.objCesta = new Cesta();
+    localStorage.removeItem(chaveCesta);
+    this.exibirMensagem("Sua cesta está vazia!!!");
   }
 }

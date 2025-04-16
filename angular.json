@@ -14,6 +14,7 @@
           "builder": "@angular-devkit/build-angular:application",
           "options": {
             "outputPath": "dist/projeto-p1-p2-gpaulon-tmartin",
+            "baseHref": "/projeto-p1-p2-gpaulon-tmartin/",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [

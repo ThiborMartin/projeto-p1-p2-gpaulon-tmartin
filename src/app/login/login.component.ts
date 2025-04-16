@@ -15,26 +15,35 @@ export class LoginComponent {
   public mensagem: string = "";
   public obj: Cliente = new Cliente();
 
-  public logar(){
-    let json = localStorage.getItem("cliente");
-    if(json==null){
-      this.mensagem = "Usuário não cadastrado, verifique!";
-    }else{
-      let clienteGravado = JSON.parse(json);
-      if(this.obj.email==clienteGravado.email && this.obj.senha==clienteGravado.senha ){
-        this.obj.logado = true;
-        clienteGravado.logado = true;
-        localStorage.setItem("cliente", JSON.stringify(clienteGravado));
-        this.router.navigate(['/vitrine']).then(() => {
-          window.location.reload(); 
-        });
-      }else{
-        this.mensagem = "Email ou senha invalidos!!";
-      }
-    }
+  constructor(private router: Router) {}
+
+  exibirMensagem(msg: string) {
+    this.mensagem = msg;
+    setTimeout(() => {
+      this.mensagem = '';
+    }, 2500);
   }
 
-  constructor(private router: Router){
+  public logar() {
+    const json = localStorage.getItem("clientes");
 
+    if (json == null) {
+      this.exibirMensagem("Usuário não cadastrado, verifique!");
+      return;
+    }
+
+    const lista: Cliente[] = JSON.parse(json);
+
+    const encontrado = lista.find(c =>
+      c.email === this.obj.email && c.senha === this.obj.senha
+    );
+
+    if (encontrado) {
+      encontrado.logado = true;
+      localStorage.setItem("cliente", JSON.stringify(encontrado)); // marca o cliente logado
+      this.router.navigate(['/vitrine']).then(() => window.location.reload());
+    } else {
+      this.exibirMensagem("Email ou senha inválidos!!");
+    }
   }
 }

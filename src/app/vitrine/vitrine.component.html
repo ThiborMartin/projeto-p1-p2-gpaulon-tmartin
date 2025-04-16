@@ -9,7 +9,7 @@
         <img src="produto{{obj.codigo}}.png" class="img-fluid rounded" style="height: 300px; object-fit: contain;" alt="Card Image">
       </a>
       <figcaption><h4 class="card-title">{{obj.nome}}</h4></figcaption>
-      <p class="card-text text-danger">R${{obj.valor}},00</p>
+      <p class="card-text text-danger">R${{obj.valorUnitario}},00</p>
       <button class="btn btn-danger" (click)="comprar(obj);">Adicionar ao carrinho</button>
     </figure>
 
@@ -23,7 +23,7 @@
             <h4 class="modal-title text-center text-dark">Detalhes de {{obj.nome}}</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
-
+          <div class="alert alert-info" *ngIf="mensagem.length>0">{{mensagem}}</div>
           <!-- Modal body -->
           <div class="modal-body text-center">
             <img class="img-fluid text-center" src="produto{{obj.codigo}}.png" alt="Modal Body"><br>
@@ -31,7 +31,7 @@
 
           <div class="modal-body">
             <p>{{obj.descritivo}}</p>
-            <h1 class="text-dark">R${{obj.valor}},00</h1>
+            <h1 class="text-dark">R${{obj.valorUnitario}},00</h1>
           </div>
 
           <!-- Modal footer -->

@@ -1,22 +1,59 @@
-<h4>Cesta de compras</h4>
-<div class="alert alert-info">{{mensagem}}</div>
+<h3 class="text-center text-dark py-3">Seu Carrinho</h3>
+<div class="alert alert-info alert-dismissible fade show" *ngIf="mensagem.length>0">{{mensagem}}</div>
 
-<table class="table table-stripped">
-    <thead>
-        <tr>
-          <th></th>  
-          <th>nome</th>
-          <th>valor</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of obj.itens">
-          <td><img src="produto{{item.codigo}}.png" width="50px"></td>
-          <td>{{item.nome}}</td>
-          <td>R$ {{item.valor}}</td>
-        </tr>
-      </tbody>
-</table>
-<br>
-<button (click)="limpar();" class="btn btn-warning">Limpar cesta</button>
-<button class="btn btn-success">Gravar pedido</button>
+<div class="row">
+  <div class="col-md-8">
+    <div class="card shadow-sm p-3 border">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Item</th>
+            <th>Qtd.</th>
+            <th>Valor</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of objCesta.itens">
+            <td><img src="produto{{item.codigo}}.png" width="50px"></td>
+            <td>{{item.nome}}</td>
+            <td>{{item.qtd}}</td>
+            <td>R$ {{item.valorTotal}},00</td>
+            <td>
+              <button class="btn btn-outline-danger" (click)="limparItem(item)">❌</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <button (click)="limpar();" class="btn btn-danger p-3">Remover todos os itens da cesta</button>
+    </div>
+  </div>
+
+
+  <div *ngIf="this.clienteLogado?.logado === true" class="col-md-4">
+    <div class="card shadow-sm p-3 border">
+      <h5 class="mb-3">Resumo do pedido</h5><br>
+      <p class="pb-1"><strong>Itens:</strong> ({{getTotalItens()}})</p>
+      <label for=""><strong>Cupom de desconto:</strong></label>
+      <div class="input-group mb-3">
+        <input [(ngModel)]="cupom" name="cupom" id="cupom" class="form-control" placeholder="Digite seu cupom">
+        <button class="btn btn-success" type="button" (click)="aplicarDesconto()">Aplicar</button>
+      </div>
+
+      <p *ngIf="!descontoAplicado">
+        <strong>Total a pagar:</strong> {{ getTotalValor() | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+      </p>
+
+      <p *ngIf="descontoAplicado">
+        <strong>Subtotal:</strong> <del>{{ getTotalValor() | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</del>  (-10%)
+      </p>
+
+      <p *ngIf="descontoAplicado">
+        <strong>Total com desconto:</strong> {{ valorComDesconto | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+      </p>
+      <button class="btn btn-danger w-100 text-white p-3">Continuar compra →</button>
+
+    </div>
+  </div>
+</div>

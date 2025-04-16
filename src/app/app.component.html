@@ -6,18 +6,17 @@
           <img src="https://mpgames.ir/assets/img/intro.png"
             alt="MP Games Logo" class="img-fluid rounded" style="height: 70px; object-fit: contain;">
         </a>
-
-        <form class="d-flex mx-auto" role="search" style="max-width: 500px; width: 100%;">
-          <input class="form-control me-2" type="search" placeholder="Buscar produtos..." [(ngModel)]="termoBusca" aria-label="Search" [ngModelOptions]="{standalone: true}">
-          <button type="button" class=" btn btn-light" (click)="buscar()">🔍</button>
-        </form>
+  
+          <form class="d-flex input-group mx-auto" role="search" style="max-width: 500px; width: 100%;">
+            <input class="form-control me-1" type="search" placeholder="Buscar produtos..." [(ngModel)]="termoBusca" aria-label="Search" [ngModelOptions]="{standalone: true}">
+            <button type="button" class=" btn btn-light" (click)="buscar()">🔍</button>
+          </form>
 
         <a *ngIf="clienteLogado?.logado === true && clienteLogado; else loginLink" class="btn btn-outline-light" (click)="logout()">Olá, {{clienteLogado.nome}} (Sair)</a>
 
         <ng-template #loginLink>
           <a href="login" class="btn btn-outline-light">Login / Cadastro</a>
         </ng-template>
-
       </div>
     </nav>
     <nav>
